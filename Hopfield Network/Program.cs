@@ -26,12 +26,8 @@ bool CheckSame(List<double> a, List<double> b)
     }
     return true;
 }
-List<double> Hopfield(List<List<double>> training_lists, List<double> corrupted_sample)
+List<List<double>> GenerateIMatrix(int n)//отримати одиничну матрицю
 {
-    int N = training_lists.Count;     //кількість образів
-    int n = training_lists[0].Count;//розмірність образу
-    double N_double = N;
-    double n_double = n;
     List<List<double>> I = new List<List<double>>();
     for (int i = 0; i < n; i++)//заповнення одиничної матриці
     {
@@ -45,22 +41,44 @@ List<double> Hopfield(List<List<double>> training_lists, List<double> corrupted_
         }
         I.Add(temp);
     }
+    return I;
+}
+List<List<double>> GenerateWeightsMatrix(List<List<double>> training_lists)
+{
+    double GetSumOfInputs(int i, int j)
+    {
+        double output = 0;
+        foreach (var list in training_lists)
+        {
+            output += list[i] * list[j];
+        }
+        return output;
+    }
+    int N = training_lists.Count;     //кількість образів
+    int n = training_lists[0].Count;//розмірність образу
+    double N_double = N;
+    double n_double = n;
+    List<List<double>> I = GenerateIMatrix(n); //одинична матриця
     List<List<double>> W = new List<List<double>>();//вагова матриця
     for (int i = 0; i < n; i++)//заповнення вагової матриці
     {
         List<double> temp = new List<double>();
         for (int j = 0; j < n; j++)
         {
-            double temp_sum = 0;
-            foreach (var list in training_lists)
-            {
-                temp_sum += list[i] * list[j];
-            }
-            double W_value = (1.0 / n_double) * (temp_sum - N_double * I[i][j]);
+            double W_value = (1.0 / n_double) * (GetSumOfInputs(i, j) - N_double * I[i][j]);
             temp.Add(W_value);
         }
         W.Add(temp);
     }
+    return W;
+}
+List<double> Hopfield(List<List<double>> training_lists, List<double> corrupted_sample)
+{
+    int N = training_lists.Count;     //кількість образів
+    int n = training_lists[0].Count;//розмірність образу
+    double N_double = N;
+    double n_double = n;
+    List<List<double>> W = GenerateWeightsMatrix(training_lists);
     Console.WriteLine("Вагова матриця:");
     PrintList(W);
     List<double> current_state = new List<double>(corrupted_sample);
