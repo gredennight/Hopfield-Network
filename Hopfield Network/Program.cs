@@ -72,6 +72,30 @@ List<List<double>> GenerateWeightsMatrix(List<List<double>> training_lists)
     }
     return W;
 }
+List<double> GetNewState(List<double> current_state, List<List<double>> W)
+{
+    double GetS(List<double> state, List<double> line_of_W)
+    {
+        double output = 0;
+        for (int i = 0; i < state.Count; i++)
+        {
+            output += state[i] * line_of_W[i];
+        }
+        return output;
+    }
+    List<double> new_state = new List<double>();
+    Console.WriteLine("i\tf\ts[i]");
+    for (int i = 0; i < current_state.Count; i++)
+    {
+        double value = GetS(current_state, W[i]);
+        if (value < 0)
+            new_state.Add(-1);
+        else
+            new_state.Add(1);
+        Console.WriteLine(i + "\t" + Math.Round(value, 2) + "\t" + new_state[i]);
+    }
+    return new_state;
+}
 List<double> Hopfield(List<List<double>> training_lists, List<double> corrupted_sample, int max_iterations=100)
 {
     List<List<double>> W = GenerateWeightsMatrix(training_lists);
@@ -83,37 +107,11 @@ List<double> Hopfield(List<List<double>> training_lists, List<double> corrupted_
     while (!IsStatesSame && iterations < max_iterations)
     {
         Console.WriteLine("\n\nІтерація: " + iterations);
-        double GetS(List<double> state, List<double> w)
-        {
-            double value = 0;
-            for (int i = 0; i < state.Count; i++)
-            {
-                value += state[i] * w[i];
-            }
-            return value;
-        }
-        List<double> new_state = new List<double>();
-        Console.WriteLine("i\tf\ts[i]");
-        for (int i = 0; i < corrupted_sample.Count; i++)
-        {
-            double value = 0;
-            for (int k = 0; k < corrupted_sample.Count; k++)
-            {
-                value += corrupted_sample[k] * W[i][k];
-            }
-            if (value < 0)
-                new_state.Add(-1);
-            else
-                new_state.Add(1);
-            Console.WriteLine(i + "\t" + Math.Round(value, 2) + "\t" + new_state[i]);
-        }
-
-
+        List<double> new_state = new List<double>(GetNewState(corrupted_sample, W));
         if (CheckSame(new_state, current_state))
             IsStatesSame = true;
         current_state = new List<double>(new_state);
         iterations++;
-
     }
     return current_state;
 }
