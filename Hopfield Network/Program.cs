@@ -72,20 +72,15 @@ List<List<double>> GenerateWeightsMatrix(List<List<double>> training_lists)
     }
     return W;
 }
-List<double> Hopfield(List<List<double>> training_lists, List<double> corrupted_sample)
+List<double> Hopfield(List<List<double>> training_lists, List<double> corrupted_sample, int max_iterations=100)
 {
-    int N = training_lists.Count;     //кількість образів
-    int n = training_lists[0].Count;//розмірність образу
-    double N_double = N;
-    double n_double = n;
     List<List<double>> W = GenerateWeightsMatrix(training_lists);
     Console.WriteLine("Вагова матриця:");
     PrintList(W);
     List<double> current_state = new List<double>(corrupted_sample);
-    bool IsRepeating = false;
-    int max_iterations = 100;
+    bool IsStatesSame = false;//чи збігається отриманий стан з попереднім станом
     int iterations = 0;
-    while (!IsRepeating && iterations < max_iterations)
+    while (!IsStatesSame && iterations < max_iterations)
     {
         Console.WriteLine("\n\nІтерація: " + iterations);
         double GetS(List<double> state, List<double> w)
@@ -115,7 +110,7 @@ List<double> Hopfield(List<List<double>> training_lists, List<double> corrupted_
 
 
         if (CheckSame(new_state, current_state))
-            IsRepeating = true;
+            IsStatesSame = true;
         current_state = new List<double>(new_state);
         iterations++;
 
