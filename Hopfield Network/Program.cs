@@ -99,8 +99,6 @@ List<double> Hopfield(List<List<double>> training_lists, List<double> corrupted_
         if (CheckSame(new_state, current_state))
             IsRepeating = true;
         current_state = new List<double>(new_state);
-        //DrawList(current_state);
-        //PrintListInLine(current_state);
         iterations++;
 
     }
