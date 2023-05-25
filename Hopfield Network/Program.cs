@@ -1,5 +1,5 @@
 ﻿using System.Globalization;
-void PrintList(List<List<double>> matrix)
+void PrintMatrix(List<List<double>> matrix)
 {
     Console.WriteLine();
     for (int i = 0; i < matrix.Count; i++)
@@ -11,7 +11,7 @@ void PrintList(List<List<double>> matrix)
         Console.WriteLine();
     }
 }
-void PrintListInLine(List<double> list)
+void PrintList(List<double> list)
 {
     Console.WriteLine();
     foreach (double value in list) { Console.Write(value + "\t"); }
@@ -26,7 +26,7 @@ bool CheckSame(List<double> a, List<double> b)
     }
     return true;
 }
-List<List<double>> GenerateIMatrix(int n)//отримати одиничну матрицю
+List<List<double>> GenerateIdentityMatrix(int n)//отримати одиничну матрицю
 {
     List<List<double>> I = new List<List<double>>();
     for (int i = 0; i < n; i++)//заповнення одиничної матриці
@@ -54,23 +54,23 @@ List<List<double>> GenerateWeightsMatrix(List<List<double>> training_lists)
         }
         return output;
     }
-    int N = training_lists.Count;     //кількість образів
-    int n = training_lists[0].Count;//розмірність образу
-    double N_double = N;
-    double n_double = n;
-    List<List<double>> I = GenerateIMatrix(n); //одинична матриця
-    List<List<double>> W = new List<List<double>>();//вагова матриця
-    for (int i = 0; i < n; i++)//заповнення вагової матриці
+    int number_of_samples = training_lists.Count;     //кількість образів
+    int number_of_dimensions_in_sample = training_lists[0].Count;//розмірність образу
+    double N_double = number_of_samples;
+    double n_double = number_of_dimensions_in_sample;
+    List<List<double>> identity_matrix = GenerateIdentityMatrix(number_of_dimensions_in_sample); //одинична матриця
+    List<List<double>> weights_matrix = new List<List<double>>();//вагова матриця
+    for (int i = 0; i < number_of_dimensions_in_sample; i++)//заповнення вагової матриці
     {
         List<double> temp = new List<double>();
-        for (int j = 0; j < n; j++)
+        for (int j = 0; j < number_of_dimensions_in_sample; j++)
         {
-            double W_value = (1.0 / n_double) * (GetSumOfInputs(i, j) - N_double * I[i][j]);
+            double W_value = (1.0 / n_double) * (GetSumOfInputs(i, j) - N_double * identity_matrix[i][j]);
             temp.Add(W_value);
         }
-        W.Add(temp);
+        weights_matrix.Add(temp);
     }
-    return W;
+    return weights_matrix;
 }
 List<double> GetNewState(List<double> current_state, List<List<double>> W)
 {
@@ -98,16 +98,16 @@ List<double> GetNewState(List<double> current_state, List<List<double>> W)
 }
 List<double> Hopfield(List<List<double>> training_lists, List<double> corrupted_sample, int max_iterations=100)
 {
-    List<List<double>> W = GenerateWeightsMatrix(training_lists);
+    List<List<double>> weights_matrix = GenerateWeightsMatrix(training_lists);
     Console.WriteLine("Вагова матриця:");
-    PrintList(W);
+    PrintMatrix(weights_matrix);
     List<double> current_state = new List<double>(corrupted_sample);
     bool IsStatesSame = false;//чи збігається отриманий стан з попереднім станом
     int iterations = 0;
     while (!IsStatesSame && iterations < max_iterations)
     {
         Console.WriteLine("\n\nІтерація: " + iterations);
-        List<double> new_state = new List<double>(GetNewState(corrupted_sample, W));
+        List<double> new_state = new List<double>(GetNewState(corrupted_sample, weights_matrix));
         if (CheckSame(new_state, current_state))
             IsStatesSame = true;
         current_state = new List<double>(new_state);
@@ -121,11 +121,11 @@ List<double> sample_for_training_2 = new List<double>() { 1, 1, -1, -1, -1 };
 List<double> sample_for_training_3 = new List<double>() { 1, 1, -1, -1, 1 };
 List<double> corrupted_sample_for_restoring = new List<double>() { 1, 1, 1, 1, 1 };
 Console.WriteLine("Еталонні образи:");
-PrintListInLine(sample_for_training_1);
-PrintListInLine(sample_for_training_2);
-PrintListInLine(sample_for_training_3);
+PrintList(sample_for_training_1);
+PrintList(sample_for_training_2);
+PrintList(sample_for_training_3);
 Console.WriteLine("Спотворений вектор:");
-PrintListInLine(corrupted_sample_for_restoring);
+PrintList(corrupted_sample_for_restoring);
 List<double> final = Hopfield(new List<List<double>>() { sample_for_training_1, sample_for_training_2, sample_for_training_3 }, corrupted_sample_for_restoring);
 Console.WriteLine("Відновлений образ:");
-PrintListInLine(final);
+PrintList(final);
