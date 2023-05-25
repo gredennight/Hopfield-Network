@@ -107,16 +107,16 @@ List<double> Hopfield(List<List<double>> training_lists, List<double> corrupted_
     return current_state;
 }
 
-List<double> x1 = new List<double>() { 1, 1, 1, -1, 1 };
-List<double> x2 = new List<double>() { 1, 1, -1, -1, -1 };
-List<double> x3 = new List<double>() { 1, 1, -1, -1, 1 };
-List<double> xt = new List<double>() { 1, 1, 1, 1, 1 };
+List<double> sample_for_training_1 = new List<double>() { 1, 1, 1, -1, 1 };
+List<double> sample_for_training_2 = new List<double>() { 1, 1, -1, -1, -1 };
+List<double> sample_for_training_3 = new List<double>() { 1, 1, -1, -1, 1 };
+List<double> corrupted_sample_for_restoring = new List<double>() { 1, 1, 1, 1, 1 };
 Console.WriteLine("Еталонні образи:");
-PrintListInLine(x1);
-PrintListInLine(x2);
-PrintListInLine(x3);
+PrintListInLine(sample_for_training_1);
+PrintListInLine(sample_for_training_2);
+PrintListInLine(sample_for_training_3);
 Console.WriteLine("Спотворений вектор:");
-PrintListInLine(xt);
-List<double> final = Hopfield(new List<List<double>>() { x1, x2, x3 }, xt);
+PrintListInLine(corrupted_sample_for_restoring);
+List<double> final = Hopfield(new List<List<double>>() { sample_for_training_1, sample_for_training_2, sample_for_training_3 }, corrupted_sample_for_restoring);
 Console.WriteLine("Відновлений образ:");
 PrintListInLine(final);
