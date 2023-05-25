@@ -56,8 +56,8 @@ List<List<double>> GenerateWeightsMatrix(List<List<double>> training_lists)
     }
     int number_of_samples = training_lists.Count;     //кількість образів
     int number_of_dimensions_in_sample = training_lists[0].Count;//розмірність образу
-    double N_double = number_of_samples;
-    double n_double = number_of_dimensions_in_sample;
+    double number_of_samples_double = number_of_samples;
+    double number_of_dimensions_in_sample_double = number_of_dimensions_in_sample;
     List<List<double>> identity_matrix = GenerateIdentityMatrix(number_of_dimensions_in_sample); //одинична матриця
     List<List<double>> weights_matrix = new List<List<double>>();//вагова матриця
     for (int i = 0; i < number_of_dimensions_in_sample; i++)//заповнення вагової матриці
@@ -65,7 +65,7 @@ List<List<double>> GenerateWeightsMatrix(List<List<double>> training_lists)
         List<double> temp = new List<double>();
         for (int j = 0; j < number_of_dimensions_in_sample; j++)
         {
-            double W_value = (1.0 / n_double) * (GetSumOfInputs(i, j) - N_double * identity_matrix[i][j]);
+            double W_value = (1.0 / number_of_dimensions_in_sample_double) * (GetSumOfInputs(i, j) - number_of_samples_double * identity_matrix[i][j]);
             temp.Add(W_value);
         }
         weights_matrix.Add(temp);
